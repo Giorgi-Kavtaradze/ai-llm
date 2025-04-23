@@ -1,7 +1,7 @@
 openai 
 torch
 transformers
-cromadb
+chromadb
 streamlit
 pypdf2
 langchain_community
