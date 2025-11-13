@@ -1,9 +1,11 @@
 from openai import OpenAI  # must install openai package
-import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+load_dotenv(project_root / ".env")
 
 client = OpenAI()
 

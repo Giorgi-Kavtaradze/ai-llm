@@ -25,4 +25,6 @@ prompt = "Once upon a time"
 # Generate text
 generated_text = generator(prompt, max_length=1000, num_return_sequences=1)
 
+print("="*100)
 print(generated_text[0]["generated_text"])
+print("="*100)

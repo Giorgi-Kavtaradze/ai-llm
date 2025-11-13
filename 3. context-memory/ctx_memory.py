@@ -1,10 +1,12 @@
 import json
 from typing import Dict, List
 from openai import OpenAI
-import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+load_dotenv(project_root / ".env")
 
 
 def initialize_client(use_ollama: bool = False) -> OpenAI:

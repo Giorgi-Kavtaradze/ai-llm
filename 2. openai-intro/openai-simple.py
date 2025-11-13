@@ -1,12 +1,14 @@
-from openai import OpenAI  # must install openai package
-import os
+﻿from openai import OpenAI  # must install openai package
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 client = OpenAI()
-# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) # this is another way to initialize the client
 
 response = client.chat.completions.create(
     model="gpt-4o-mini",
