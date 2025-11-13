@@ -1,6 +1,11 @@
 from openai import OpenAI
 import sys
+from pathlib import Path
+from dotenv import load_dotenv
 
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+load_dotenv(project_root / ".env")
 
 def simple_chat_without_memory(
     user_input: str,
@@ -44,7 +49,7 @@ def main():
 
     use_ollama = choice == "2"
 
-    # Print instructions
+    # Print instructionss
     print("\n=== Chat Session Started ===")
     print("Type 'quit' or 'exit' to end the conversation")
     print("Type 'clear' to clear the screen")

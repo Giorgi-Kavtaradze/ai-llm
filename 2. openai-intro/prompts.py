@@ -112,7 +112,6 @@ completion = client.chat.completions.create(
     top_p=0.9,  # controls the diversity of the output
 )
 print(completion.choices[0].message.content)
-exit()
 
 # === Combining techniques ===
 completion = client.chat.completions.create(
