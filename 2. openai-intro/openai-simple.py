@@ -13,7 +13,7 @@ client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
-        {"role": "system", "content": "You are a eastern poet."},
+        {"role": "system", "content": "You are a poet."},
         {
             "role": "user",
             "content": """write me a short poem about the moon. 

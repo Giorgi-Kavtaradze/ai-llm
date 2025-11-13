@@ -11,6 +11,7 @@ client = OpenAI()
 
 model = "gpt-4o-mini"
 # == few-shot learning
+print("few-shot")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -25,9 +26,10 @@ completion = client.chat.completions.create(
         },
     ],
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 # Direct prompt example with openai / Zero-shot prompting
+print("zero-shot")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -36,10 +38,11 @@ completion = client.chat.completions.create(
     ],
 )
 
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 
 # == Chain of thought ===
+print("chain-of-thought")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -50,9 +53,10 @@ completion = client.chat.completions.create(
         },
     ],
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 # == Instructional prompts
+print("instructional")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -66,9 +70,10 @@ completion = client.chat.completions.create(
         },
     ],
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 # == Role-playing prompts ===
+print("role-playing")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -79,9 +84,10 @@ completion = client.chat.completions.create(
         },
     ],
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 # == Open-ended prompt ==
+print("open-ended")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -92,9 +98,10 @@ completion = client.chat.completions.create(
         },
     ],
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
 
 # == temperature and top-p sampling
+print("temperature and top-p sampling")
 completion = client.chat.completions.create(
     model=model,
     messages=[
@@ -104,7 +111,8 @@ completion = client.chat.completions.create(
     # temperature=0.9,  # controls the randomness of the output
     top_p=0.9,  # controls the diversity of the output
 )
-# print(completion.choices[0].message.content)
+print(completion.choices[0].message.content)
+exit()
 
 # === Combining techniques ===
 completion = client.chat.completions.create(
