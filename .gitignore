@@ -125,3 +125,6 @@ advanced-rag/
 fine-tuning-lora/
 fine-tuning-openai/
 langchain-fundamentals/
+
+# ignore database folders
+db/

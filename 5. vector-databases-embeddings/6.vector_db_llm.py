@@ -61,7 +61,6 @@ def index_data(directory_path):
     documents = load_documents_from_directory(directory_path)
 
     # Split the documents into chunks
-    print("==== Splitting docs into chunks ====")
     chunked_documents = []
     for doc in tqdm(documents, desc="Splitting docs into chunks"):
         chunks = split_text(doc["text"])
@@ -70,22 +69,7 @@ def index_data(directory_path):
             chunked_documents.append({"id": f"{doc['id']}_chunk{i+1}", "text": chunk})
 
 
-    # Function to generate embeddings using OpenAI API
-    def get_openai_embedding(text):
-        response = client.embeddings.create(input=text, model="text-embedding-3-small")
-        embedding = response.data[0].embedding
-        print("==== Generating embeddings... ====")
-        return embedding
-
-
-    # Generate embeddings for the document chunks
-    # for doc in chunked_documents:
-    #     print("==== Generating embeddings... ====")
-    #     doc["embedding"] = get_openai_embedding(doc["text"])
-
-
     # Upsert documents with embeddings into Chroma
-    print("==== Inserting chunks into db ====")
     for doc in tqdm(chunked_documents, desc="Inserting chunks into db"):    
         collection.upsert(
             ids=[doc["id"]], documents=[doc["text"]]
@@ -148,7 +132,7 @@ question = input("Enter your question: ")
 
 if not question:
     print("using default question")
-    question = "give me a brief overview of the articles. Be concise."
+    question = "Tell me news about Meta"
     print(question)
 
 relevant_chunks = query_documents(question)
