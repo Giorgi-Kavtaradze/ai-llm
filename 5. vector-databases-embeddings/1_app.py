@@ -21,7 +21,7 @@ for doc in documents:
     collection.upsert(ids=doc["id"], documents=[doc["text"]])
 
 # define a query text
-query_text = "Age of the Earth"
+query_text = "whats for today?"
 
 results = collection.query(
     query_texts=[query_text],

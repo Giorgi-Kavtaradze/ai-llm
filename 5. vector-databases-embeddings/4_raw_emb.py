@@ -15,7 +15,7 @@ load_dotenv(env_path)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 response = client.embeddings.create(
-    input="Your text string goes here", model="text-embedding-3-small"
+    input="Hi my name is Tornike", model="text-embedding-3-small"
 )
 
 print(response)

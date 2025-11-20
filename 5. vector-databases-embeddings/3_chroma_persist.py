@@ -27,7 +27,7 @@ query_text = "find document related to technology company"
 
 results = collection.query(
     query_texts=[query_text],
-    n_results=2,
+    n_results=4,
 )
 
 for idx, document in enumerate(results["documents"][0]):
