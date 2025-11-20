@@ -7,9 +7,14 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import ChatOpenAI
+from pathlib import Path
 
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+
+load_dotenv(env_path)
 
 openai_key = os.getenv("OPENAI_API_KEY")
 
