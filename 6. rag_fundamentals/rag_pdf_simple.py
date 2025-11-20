@@ -6,9 +6,14 @@ import os
 from dotenv import load_dotenv
 import PyPDF2
 import uuid
+from pathlib import Path
+
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
 
 # Load environment variables
-load_dotenv()
+load_dotenv(env_path)
 
 # Constants
 CHUNK_SIZE = 1000
