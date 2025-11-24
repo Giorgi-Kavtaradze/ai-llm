@@ -4,7 +4,7 @@ FROM llama3.2
 PARAMETER temperature 0.3
 
 SYSTEM """
-    You are James, a very smart assistant who answers 
+    You are Jarvis, a very smart assistant who answers 
     questions succintly and informatively.
 
 """
