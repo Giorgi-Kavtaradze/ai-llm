@@ -14,7 +14,7 @@ env_path = project_root / ".env"
 load_dotenv(env_path)
 openai_key = os.getenv("OPENAI_API_KEY")
 
-openai_ef = embedding_functions.OllamaEmbeddingFunction(
+ollama_ef = embedding_functions.OllamaEmbeddingFunction(
     url="http://localhost:11434",
     model_name="nomic-embed-text",
 )
@@ -24,10 +24,10 @@ openai_ef = embedding_functions.OllamaEmbeddingFunction(
 chroma_client = chromadb.PersistentClient(path="./db/chroma_persistent_storage")
 collection_name = "document_qa_collection"
 collection = chroma_client.get_or_create_collection(
-    name=collection_name, embedding_function=openai_ef
+    name=collection_name, embedding_function=ollama_ef
 )
 
-client = OpenAI(api_key=openai_key)
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
 directory_path = "../5. vector-databases-embeddings/data/new_articles"
 
 # =================================
@@ -107,7 +107,7 @@ def generate_response(question, relevant_chunks):
     )
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="llama3.2",
         messages=[
             {
                 "role": "system",

@@ -78,6 +78,14 @@ class SimplePDFProcessor:
             text += page.extract_text() + "\n"
         return text
 
+    def read_pdf_images(self, pdf_file):
+        """Read PDF and extract images"""
+        reader = PyPDF2.PdfReader(pdf_file)
+        images = []
+        for page in reader.pages:
+            images.append(page.images)
+        return images
+
     def create_chunks(self, text, pdf_file):
         """Split text into chunks"""
         chunks = []
@@ -146,9 +154,8 @@ class SimpleRAGSystem:
                 )
             elif self.embedding_model == "nomic":
                 # For Nomic embeddings via Ollama
-                self.embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
-                    api_key="ollama",
-                    api_base="http://localhost:11434/v1",
+                self.embedding_fn = embedding_functions.OllamaEmbeddingFunction(
+                    url="http://localhost:11434",
                     model_name="nomic-embed-text",
                 )
 
