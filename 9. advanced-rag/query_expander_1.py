@@ -1,10 +1,13 @@
-import os
 from typing import List
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
+from pathlib import Path
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 
 ## Part 1 -- Only focus on the QueryExpander class and getting the query expansion to work

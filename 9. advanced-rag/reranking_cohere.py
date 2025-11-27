@@ -2,18 +2,21 @@ import os
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 import streamlit as st
-from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.documents import Document
-from langchain_chroma import Chroma
-from langchain.prompts import PromptTemplate
+from langchain_community.vectorstores import Chroma
+from langchain_core.prompts import PromptTemplate
 import cohere
 
 # must install this: pip install "unstructured[pdf]"
 ## Must pip install torch transformers sentence-transformers cohere
-
-load_dotenv()
+from pathlib import Path
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 # Get your cohere API key on: www.cohere.com
 co = cohere.ClientV2(api_key=os.environ["COHERE_API_KEY"])
 
