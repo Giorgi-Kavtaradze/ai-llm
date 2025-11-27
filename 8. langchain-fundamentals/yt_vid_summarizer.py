@@ -27,8 +27,11 @@ from langchain_core.documents import Document
 
 
 from dotenv import load_dotenv
-
-load_dotenv()
+from pathlib import Path
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 
 class EmbeddingModel:

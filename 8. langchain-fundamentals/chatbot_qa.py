@@ -10,8 +10,12 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
 
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 model_name = "gpt-4o-mini"  # Ensure Up-to-date model initialization
 

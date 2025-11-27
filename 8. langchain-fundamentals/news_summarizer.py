@@ -9,10 +9,13 @@ from langchain.schema import Document
 from newspaper import Article
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
+from pathlib import Path
 
 from dotenv import load_dotenv
-
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 
 class NewsArticleSummarizer:

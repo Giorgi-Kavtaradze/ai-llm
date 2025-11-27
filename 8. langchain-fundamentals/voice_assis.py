@@ -23,8 +23,12 @@ from dotenv import load_dotenv
 import os
 from typing import List
 from langchain_core.documents import Document
+from pathlib import Path
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 class DocumentProcessor:
     def __init__(self):

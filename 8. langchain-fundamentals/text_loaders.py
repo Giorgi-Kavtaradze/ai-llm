@@ -5,8 +5,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 import pprint
 import re
+from pathlib import Path
 
-load_dotenv()
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 
 # Data cleaning function
