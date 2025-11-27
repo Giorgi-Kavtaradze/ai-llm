@@ -44,5 +44,13 @@ rag_chain = (
 )
 
 # Ask a question
-answer = rag_chain.invoke("What are the main topics covered in this document?")
-print(answer)
+question = "What are the main topics covered in this document?"
+answer = rag_chain.invoke(question)
+print(f"Question: {question}")
+print(f"Answer: {answer}")
+
+# Ask a question
+question = "What did Martin Luther King Jr. dream about?"   
+answer = rag_chain.invoke(question)
+print(f"Question: {question}")
+print(f"Answer: {answer}")
