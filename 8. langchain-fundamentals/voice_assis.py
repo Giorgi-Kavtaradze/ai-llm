@@ -225,12 +225,12 @@ def main():
     st.set_page_config(page_title="Voice RAG Assistant", layout="wide")
 
     # Check for API keys
-    elevenlabs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
+    elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
     if not all([elevenlabs_api_key, openai_api_key]):
         st.error(
-            "Please set ELEVEN_LABS_API_KEY and OPENAI_API_KEY in your environment variables"
+            "Please set ELEVENLABS_API_KEY and OPENAI_API_KEY in your environment variables"
         )
         return
 
