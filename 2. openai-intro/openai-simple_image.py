@@ -11,7 +11,7 @@ load_dotenv(env_path)
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5",
+    model="gpt-6-luna",
     input=[
         {
             "role": "user",

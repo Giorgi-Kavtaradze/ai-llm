@@ -17,7 +17,7 @@ project_root = Path(__file__).resolve().parent.parent
 env_path = project_root / ".env"
 load_dotenv(env_path)
 
-model_name = "gpt-4o-mini"  # Ensure Up-to-date model initialization
+model_name = "gpt-6-luna"  # Ensure Up-to-date model initialization
 
 # List of documents to process
 documents = [
@@ -59,7 +59,7 @@ def create_vector_store(texts: List[str], metadatas: List[Dict]):
 
 def setup_qa_chain(db):
     """Set up QA chain with polite response template"""
-    llm = ChatOpenAI(model_name=model_name, temperature=0)
+    llm = ChatOpenAI(model_name=model_name, temperature=0, reasoning_effort="none")
     retriever = db.as_retriever()
 
     # Create a custom prompt template

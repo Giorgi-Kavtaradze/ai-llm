@@ -9,7 +9,7 @@ load_dotenv(project_root / ".env")
 
 client = OpenAI()
 
-model = "gpt-4o-mini"
+model = "gpt-6-luna"
 # == few-shot learning
 print("few-shot")
 completion = client.chat.completions.create(
@@ -108,6 +108,8 @@ completion = client.chat.completions.create(
         {"role": "system", "content": "You are a creative writer."},
         {"role": "user", "content": "Write a creative tagline for a coffee shop."},
     ],
+    # GPT-6 models only accept temperature/top_p when reasoning is turned off
+    reasoning_effort="none",
     # temperature=0.9,  # controls the randomness of the output
     top_p=0.9,  # controls the diversity of the output
 )
@@ -123,6 +125,7 @@ completion = client.chat.completions.create(
             "content": "Write a 500-word blog post about your recent trip to Paris. Make sure to give a step-by-step itinerary of your trip.",
         },
     ],
+    reasoning_effort="none",  # required to use temperature with GPT-6 models
     temperature=0.9,
     stream=True,
     # top_p=0.9,

@@ -21,7 +21,7 @@ def simple_chat_without_memory(
         model_name = "llama3.2"
     else:
         client = OpenAI()
-        model_name = "gpt-4o-mini"
+        model_name = "gpt-6-luna"
 
     # Each call only includes the current message
     try:

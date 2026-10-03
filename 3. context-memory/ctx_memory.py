@@ -80,7 +80,7 @@ def main():
 
     # Initialize client and model name
     client = initialize_client(use_ollama)
-    model_name = "llama3.2" if use_ollama else "gpt-4o-mini"
+    model_name = "llama3.2" if use_ollama else "gpt-6-luna"
 
     # Initialize or load conversation
     messages = create_initial_messages()

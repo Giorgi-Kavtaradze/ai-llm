@@ -29,7 +29,7 @@ Question: {question}
 Answer:
 """)
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(model="gpt-6-luna")
 
 # Helper to format retrieved docs
 def format_docs(docs):

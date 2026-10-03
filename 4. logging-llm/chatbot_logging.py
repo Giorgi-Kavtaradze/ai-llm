@@ -45,7 +45,7 @@ class ChatBot:
         self.session_id = str(uuid.uuid4())
         self.client = initialize_client(use_ollama)
         self.use_ollama = use_ollama
-        self.model_name = "llama3.2" if use_ollama else "gpt-4o-mini"
+        self.model_name = "llama3.2" if use_ollama else "gpt-6-luna"
 
         # Initialize conversation with a system message
         self.messages = [

@@ -245,7 +245,7 @@ class SimpleRAGSystem:
             """
 
             response = self.llm.chat.completions.create(
-                model="gpt-4o-mini" if self.llm_model == "openai" else "llama3.2",
+                model="gpt-6-luna" if self.llm_model == "openai" else "llama3.2",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": prompt},
