@@ -8,10 +8,10 @@ from elevenlabs.client import ElevenLabs
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import (
+from langchain_classic.chains import ConversationalRetrievalChain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import (
     PyPDFLoader,
     DirectoryLoader,
     TextLoader,

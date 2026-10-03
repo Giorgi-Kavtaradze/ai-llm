@@ -1,5 +1,5 @@
 from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Load your document (assuming a text file for this example)
 text_loader = TextLoader("./doc/dream.txt")  # Ensure this file exists

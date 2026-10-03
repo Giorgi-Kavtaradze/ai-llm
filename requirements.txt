@@ -14,6 +14,9 @@ langchain-ollama
 langchain[openai]
 langchain-chroma
 langchain-unstructured
+langchain-classic
+langchain-huggingface
+openai-whisper
 yt_dlp
 
 # for voice assistant RAG workflow

@@ -49,7 +49,7 @@ for pdf_file in pdf_files:
         )
 
 # Split and chunk
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=300)
 
@@ -102,7 +102,7 @@ embeddings = generate_embeddings(texts)
 
 ## === Add Embeddings to Vector Database Chromadb ===
 from langchain_chroma import Chroma
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 
 # Wrap texts with their respective metadata into Document objects
@@ -123,11 +123,11 @@ vector_db = Chroma.from_documents(
 
 
 # Implement a Query Processing Muliti-query Retriever
-from langchain.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
 from langchain_core.runnables import RunnablePassthrough
-from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain_classic.retrievers.multi_query import MultiQueryRetriever
 
 # LLM from Ollama
 local_model = "llama3.2"

@@ -15,14 +15,14 @@ import yt_dlp
 import whisper
 import os
 from typing import List, Dict
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_ollama import ChatOllama
 from langchain_chroma import Chroma
-from langchain.chains import ConversationalRetrievalChain
+from langchain_classic.chains import ConversationalRetrievalChain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.memory import ConversationBufferMemory
-from langchain.chains.summarize import load_summarize_chain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_classic.chains.summarize import load_summarize_chain
 from langchain_core.documents import Document
 
 
@@ -45,11 +45,11 @@ class EmbeddingModel:
                 openai_api_key=os.getenv("OPENAI_API_KEY"),
             )
         elif model_type == "chroma":
-            from langchain.embeddings import HuggingFaceEmbeddings
+            from langchain_huggingface import HuggingFaceEmbeddings
 
             self.embedding_fn = HuggingFaceEmbeddings()
         elif model_type == "nomic":
-            from langchain.embeddings import OllamaEmbeddings
+            from langchain_ollama import OllamaEmbeddings
 
             self.embedding_fn = OllamaEmbeddings(
                 model="nomic-embed-text", base_url="http://localhost:11434"
