@@ -22,7 +22,9 @@ response = client.responses.create(
                 },
                 {
                     "type": "input_image",
-                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/LeBron_James_Layup_%28Cleveland_vs_Brooklyn_2018%29.jpg"
+                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/LeBron_James_Layup_%28Cleveland_vs_Brooklyn_2018%29.jpg",
+                    # "auto" misreads this large photo; "high" reads the jersey text correctly
+                    "detail": "high",
                 }
             ]
         }
