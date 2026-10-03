@@ -17,8 +17,8 @@ import os
 from typing import List, Dict
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_community.chat_models import ChatOllama
-from langchain_community.vectorstores import Chroma
+from langchain_ollama import ChatOllama
+from langchain_chroma import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferMemory
@@ -74,7 +74,7 @@ class LLMModel:
                 model=model_name,
                 temperature=0,
                 format="json",
-                timeout=120,
+                client_kwargs={"timeout": 120},
             )
         else:
             raise ValueError(f"Unsupported LLM type: {model_type}")

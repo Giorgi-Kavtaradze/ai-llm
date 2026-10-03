@@ -101,7 +101,7 @@ embeddings = generate_embeddings(texts)
 
 
 ## === Add Embeddings to Vector Database Chromadb ===
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain.schema import Document
 from langchain_ollama import OllamaEmbeddings
 
@@ -111,20 +111,13 @@ docs = [
     for chunk in metadata_text_chunks
 ]
 
-# == Use fastEmbeddings model from Ollama ==
-# to add embeddings into the vector database
-# and have a better quality of the embeddings
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
-
-fastembedding = FastEmbedEmbeddings()
 # Also for performance improvement, persist the vector database
 vector_db_path = "./db/vector_db"
 
 vector_db = Chroma.from_documents(
     documents=docs,
-    embedding=fastembedding,
+    embedding=OllamaEmbeddings(model="nomic-embed-text"),
     persist_directory=vector_db_path,
-    # embedding=OllamaEmbeddings(model="nomic-embed-text"),
     collection_name="docs-local-rag",
 )
 

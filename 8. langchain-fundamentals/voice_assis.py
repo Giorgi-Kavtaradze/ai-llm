@@ -6,7 +6,7 @@ from elevenlabs.client import ElevenLabs
 
 
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
@@ -83,7 +83,6 @@ class DocumentProcessor:
                 embedding=self.embeddings,
                 persist_directory=persist_directory,
             )
-            vector_store.persist()
 
         return vector_store
     

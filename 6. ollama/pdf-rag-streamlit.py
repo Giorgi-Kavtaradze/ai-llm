@@ -3,9 +3,9 @@
 import streamlit as st
 import os
 import logging
-from langchain_community.document_loaders import UnstructuredPDFLoader
+from langchain_unstructured import UnstructuredLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_ollama import ChatOllama
@@ -28,7 +28,9 @@ PERSIST_DIRECTORY = "./chroma_db"
 def ingest_pdf(doc_path):
     """Load PDF documents."""
     if os.path.exists(doc_path):
-        loader = UnstructuredPDFLoader(file_path=doc_path)
+        loader = UnstructuredLoader(
+            file_path=doc_path, chunking_strategy="basic", max_characters=1200, overlap=300
+        )
         data = loader.load()
         logging.info("PDF loaded successfully.")
         return data
@@ -76,7 +78,6 @@ def load_vector_db():
             collection_name=VECTOR_STORE_NAME,
             persist_directory=PERSIST_DIRECTORY,
         )
-        vector_db.persist()
         logging.info("Vector database created and persisted.")
     return vector_db
 

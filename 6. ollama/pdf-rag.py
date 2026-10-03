@@ -6,15 +6,16 @@
 # 6. retrieve the similar documents and present them to the user
 ## run pip install -r requirements.txt to install the required packages
 
-from langchain_community.document_loaders import UnstructuredPDFLoader
-from langchain_community.document_loaders import OnlinePDFLoader
+from langchain_unstructured import UnstructuredLoader
 
 doc_path = "./data/BOI.pdf"
 model = "llama3.2"
 
 # Local PDF file uploads
 if doc_path:
-    loader = UnstructuredPDFLoader(file_path=doc_path)
+    loader = UnstructuredLoader(
+        file_path=doc_path, chunking_strategy="basic", max_characters=1200, overlap=300
+    )
     data = loader.load()
     print("done loading....")
 else:
@@ -32,7 +33,7 @@ content = data[0].page_content
 
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 # Split and chunk
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=300)

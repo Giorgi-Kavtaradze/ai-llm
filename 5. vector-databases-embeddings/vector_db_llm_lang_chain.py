@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.document_loaders import TextLoader
@@ -39,7 +39,7 @@ print(f"Number of documents: {len(documents)}")
 # get embeddings
 embedding = OpenAIEmbeddings(api_key=openai_key, model="text-embedding-3-small")
 
-# Next we instantiate the Chroma object from langchain_community.vectorstores
+# Next we instantiate the Chroma object from langchain_chroma
 persits_directory = "./db/chroma_db_real_world"
 vectordb = Chroma.from_documents(
     documents=documents, embedding=embedding, persist_directory=persits_directory
