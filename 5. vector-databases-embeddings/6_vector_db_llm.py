@@ -106,7 +106,7 @@ def generate_response(question, relevant_chunks):
     )
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-6-luna",
         messages=[
             {
                 "role": "system",

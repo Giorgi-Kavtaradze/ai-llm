@@ -6,7 +6,7 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.documents import Document
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import PromptTemplate
 import cohere
 
@@ -160,7 +160,7 @@ class RAGSystem:
         self.db_manager = ChromaDBManager(persist_directory)
         self.vector_store = self.db_manager.create_or_load_db()
         self.reranker = CohereReranker()
-        self.llm = ChatOpenAI(temperature=0, model="gpt-4o-mini")
+        self.llm = ChatOpenAI(temperature=0, model="gpt-6-luna", reasoning_effort="none")
 
     def query(self, query: str, top_k: int = 5) -> Dict[str, Any]:
         try:

@@ -15,14 +15,14 @@ import yt_dlp
 import whisper
 import os
 from typing import List, Dict
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_community.chat_models import ChatOllama
-from langchain_community.vectorstores import Chroma
-from langchain.chains import ConversationalRetrievalChain
+from langchain_ollama import ChatOllama
+from langchain_chroma import Chroma
+from langchain_classic.chains import ConversationalRetrievalChain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.memory import ConversationBufferMemory
-from langchain.chains.summarize import load_summarize_chain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_classic.chains.summarize import load_summarize_chain
 from langchain_core.documents import Document
 
 
@@ -45,11 +45,11 @@ class EmbeddingModel:
                 openai_api_key=os.getenv("OPENAI_API_KEY"),
             )
         elif model_type == "chroma":
-            from langchain.embeddings import HuggingFaceEmbeddings
+            from langchain_huggingface import HuggingFaceEmbeddings
 
             self.embedding_fn = HuggingFaceEmbeddings()
         elif model_type == "nomic":
-            from langchain.embeddings import OllamaEmbeddings
+            from langchain_ollama import OllamaEmbeddings
 
             self.embedding_fn = OllamaEmbeddings(
                 model="nomic-embed-text", base_url="http://localhost:11434"
@@ -61,20 +61,20 @@ class EmbeddingModel:
 class LLMModel:
     """Handles different LLM models"""
 
-    def __init__(self, model_type="openai", model_name="gpt-4"):
+    def __init__(self, model_type="openai", model_name="gpt-6-luna"):
         self.model_type = model_type
         self.model_name = model_name
 
         if model_type == "openai":
             if not os.getenv("OPENAI_API_KEY"):
                 raise ValueError("OpenAI API key is required for OpenAI models")
-            self.llm = ChatOpenAI(model_name=model_name, temperature=0)
+            self.llm = ChatOpenAI(model_name=model_name, temperature=0, reasoning_effort="none")
         elif model_type == "ollama":
             self.llm = ChatOllama(
                 model=model_name,
                 temperature=0,
                 format="json",
-                timeout=120,
+                client_kwargs={"timeout": 120},
             )
         else:
             raise ValueError(f"Unsupported LLM type: {model_type}")
@@ -82,7 +82,7 @@ class LLMModel:
 
 class YoutubeVideoSummarizer:
     def __init__(
-        self, llm_type="openai", llm_model_name="gpt-4", embedding_type="openai"
+        self, llm_type="openai", llm_model_name="gpt-6-luna", embedding_type="openai"
     ):
         """Initialize with different LLM and embedding options"""
         # Initialize Models
@@ -242,7 +242,7 @@ def main():
 
     # Configure model settings
     llm_type = "openai" if llm_choice == "1" else "ollama"
-    llm_model_name = "gpt-4" if llm_choice == "1" else "llama3.2"
+    llm_model_name = "gpt-6-luna" if llm_choice == "1" else "llama3.2"
 
     if embedding_choice == "1":
         embedding_type = "openai"

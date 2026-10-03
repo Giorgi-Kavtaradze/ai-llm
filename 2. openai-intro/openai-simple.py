@@ -11,7 +11,7 @@ load_dotenv(env_path)
 client = OpenAI()
 
 response = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="gpt-6-luna",
     messages=[
         {"role": "system", "content": "You are a poet."},
         {

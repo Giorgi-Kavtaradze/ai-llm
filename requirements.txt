@@ -6,12 +6,17 @@ streamlit
 pypdf2
 langchain_community
 faiss-cpu
-unstructured
+unstructured[pdf]
 selenium
 newspaper3k
 lxml-html-clean 
 langchain-ollama
 langchain[openai]
+langchain-chroma
+langchain-unstructured
+langchain-classic
+langchain-huggingface
+openai-whisper
 yt_dlp
 
 # for voice assistant RAG workflow
@@ -25,7 +30,6 @@ sentence-transformers
 
 
 
-# must install this --pip install "unstructured[pdf]"
 
 # for LoRa
 datasets 

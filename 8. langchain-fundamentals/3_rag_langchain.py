@@ -5,6 +5,13 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load .env from project root (parent directory)
+project_root = Path(__file__).resolve().parent.parent
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 # Load and split documents
 loader = TextLoader("./doc/dream.txt")
@@ -29,7 +36,7 @@ Question: {question}
 Answer:
 """)
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(model="gpt-6-luna")
 
 # Helper to format retrieved docs
 def format_docs(docs):

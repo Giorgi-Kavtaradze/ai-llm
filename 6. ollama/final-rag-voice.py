@@ -49,7 +49,7 @@ for pdf_file in pdf_files:
         )
 
 # Split and chunk
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=300)
 
@@ -101,8 +101,8 @@ embeddings = generate_embeddings(texts)
 
 
 ## === Add Embeddings to Vector Database Chromadb ===
-from langchain_community.vectorstores import Chroma
-from langchain.schema import Document
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
 from langchain_ollama import OllamaEmbeddings
 
 # Wrap texts with their respective metadata into Document objects
@@ -111,30 +111,23 @@ docs = [
     for chunk in metadata_text_chunks
 ]
 
-# == Use fastEmbeddings model from Ollama ==
-# to add embeddings into the vector database
-# and have a better quality of the embeddings
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
-
-fastembedding = FastEmbedEmbeddings()
 # Also for performance improvement, persist the vector database
 vector_db_path = "./db/vector_db"
 
 vector_db = Chroma.from_documents(
     documents=docs,
-    embedding=fastembedding,
+    embedding=OllamaEmbeddings(model="nomic-embed-text"),
     persist_directory=vector_db_path,
-    # embedding=OllamaEmbeddings(model="nomic-embed-text"),
     collection_name="docs-local-rag",
 )
 
 
 # Implement a Query Processing Muliti-query Retriever
-from langchain.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
 from langchain_core.runnables import RunnablePassthrough
-from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain_classic.retrievers.multi_query import MultiQueryRetriever
 
 # LLM from Ollama
 local_model = "llama3.2"

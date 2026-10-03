@@ -11,7 +11,7 @@ load_dotenv(env_path)
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt-5",
+    model="gpt-6-luna",
     input=[
         {
             "role": "user",
@@ -22,7 +22,9 @@ response = client.responses.create(
                 },
                 {
                     "type": "input_image",
-                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/LeBron_James_Layup_%28Cleveland_vs_Brooklyn_2018%29.jpg"
+                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/LeBron_James_Layup_%28Cleveland_vs_Brooklyn_2018%29.jpg",
+                    # "auto" misreads this large photo; "high" reads the jersey text correctly
+                    "detail": "high",
                 }
             ]
         }

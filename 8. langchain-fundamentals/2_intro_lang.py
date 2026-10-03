@@ -10,7 +10,7 @@ env_path = project_root / ".env"
 load_dotenv(env_path)
 
 # Initialize the chat model
-model = init_chat_model("gpt-4o-mini", model_provider="openai")
+model = init_chat_model("gpt-6-luna", model_provider="openai")
 
 # Define the prompt template
 system_template = "Translate the following from English into {language}"

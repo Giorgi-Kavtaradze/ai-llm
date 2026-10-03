@@ -6,12 +6,12 @@ from elevenlabs.client import ElevenLabs
 
 
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import (
+from langchain_classic.chains import ConversationalRetrievalChain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import (
     PyPDFLoader,
     DirectoryLoader,
     TextLoader,
@@ -83,7 +83,6 @@ class DocumentProcessor:
                 embedding=self.embeddings,
                 persist_directory=persist_directory,
             )
-            vector_store.persist()
 
         return vector_store
     
@@ -129,7 +128,7 @@ class VoiceGenerator:
 class VoiceAssistantRAG:
     def __init__(self, elevenlabs_api_key):
         self.whisper_model = whisper.load_model("base")
-        self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+        self.llm = ChatOpenAI(model_name="gpt-6-luna", temperature=0, reasoning_effort="none")
         self.embeddings = OpenAIEmbeddings()
         self.vector_store = None
         self.qa_chain = None
@@ -226,12 +225,12 @@ def main():
     st.set_page_config(page_title="Voice RAG Assistant", layout="wide")
 
     # Check for API keys
-    elevenlabs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
+    elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
     if not all([elevenlabs_api_key, openai_api_key]):
         st.error(
-            "Please set ELEVEN_LABS_API_KEY and OPENAI_API_KEY in your environment variables"
+            "Please set ELEVENLABS_API_KEY and OPENAI_API_KEY in your environment variables"
         )
         return
 

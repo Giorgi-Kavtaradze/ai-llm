@@ -10,6 +10,12 @@ Install these before you start:
 - **Git**: download it from [git-scm.com](https://git-scm.com/downloads). Check it with `git --version`.
 - **A code editor** of your choice, for example [VS Code](https://code.visualstudio.com/) or [PyCharm](https://www.jetbrains.com/pycharm/).
 - **A virtual environment** (recommended). It keeps this course's packages separate from the rest of your computer. The steps below set one up for you.
+- **ffmpeg** (only for the audio examples in `8. langchain-fundamentals`: `voice_assis.py` and `yt_vid_summarizer.py`). Whisper uses it to read audio files. Install it with:
+  - **Windows:** `winget install --id Gyan.FFmpeg`
+  - **macOS:** `brew install ffmpeg` (needs [Homebrew](https://brew.sh/))
+  - **Linux (Ubuntu/Debian):** `sudo apt install ffmpeg`
+
+  Check it with `ffmpeg -version`.
 
 ## First-time setup
 

@@ -20,9 +20,9 @@ class EmbeddingModel:
     def __init__(self, model_type="openai"):
         self.model_type = model_type
         if model_type == "openai":
-            self.client = OpenAI(api_key)
-            self.embedding_fn = embedding_functions.OpenAIEmbedding(
-                api_key,
+            self.client = OpenAI(api_key=api_key)
+            self.embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
+                api_key=api_key,
                 model_name="text-embedding-3-small",
             )
         elif model_type == "chroma":
@@ -41,10 +41,13 @@ class LLMModel:
         self.model_type = model_type
         if model_type == "openai":
             self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            self.model_name = "gpt-4o-mini"
+            self.model_name = "gpt-6-luna"
+            # GPT-6 models only accept temperature when reasoning is turned off
+            self.extra_args = {"reasoning_effort": "none"}
         else:
             self.client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
             self.model_name = "llama3.2"
+            self.extra_args = {}
 
     def generate_completion(self, messages):
         try:
@@ -52,6 +55,7 @@ class LLMModel:
                 model=self.model_name,
                 messages=messages,
                 temperature=0.0,  # 0.0 is deterministic
+                **self.extra_args,
             )
             return response.choices[0].message.content
         except Exception as e:

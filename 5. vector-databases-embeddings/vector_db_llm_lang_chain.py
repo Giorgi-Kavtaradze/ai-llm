@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.document_loaders import TextLoader
@@ -18,7 +18,7 @@ load_dotenv(env_path)
 
 openai_key = os.getenv("OPENAI_API_KEY")
 
-model = ChatOpenAI(api_key=openai_key, model="gpt-4")
+model = ChatOpenAI(api_key=openai_key, model="gpt-6-luna")
 
 
 # load documents
@@ -39,7 +39,7 @@ print(f"Number of documents: {len(documents)}")
 # get embeddings
 embedding = OpenAIEmbeddings(api_key=openai_key, model="text-embedding-3-small")
 
-# Next we instantiate the Chroma object from langchain_community.vectorstores
+# Next we instantiate the Chroma object from langchain_chroma
 persits_directory = "./db/chroma_db_real_world"
 vectordb = Chroma.from_documents(
     documents=documents, embedding=embedding, persist_directory=persits_directory
@@ -52,8 +52,8 @@ retriever = vectordb.as_retriever()
 # print(res_docs)
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains import create_retrieval_chain
 
 system_prompt = (
     "You are an assistant for question-answering tasks. "
