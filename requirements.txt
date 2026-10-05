@@ -40,3 +40,6 @@ fastapi
 uvicorn
 
 prettytable
+
+# to run the Jupyter notebooks
+ipykernel

@@ -18,11 +18,13 @@ completion = client.chat.completions.create(
         {"role": "system", "content": "You are a translator."},
         {
             "role": "user",
-            "content": """ Translate these sentences: 
-            'Hello' -> 'Hola', 
-            'Goodbye' -> 'Adiós'. 
-            '.
-             Now translate: 'Thank you'.""",
+            # The examples show the answer format; the last line is left for the model to finish
+            "content": (
+                "Translate English to Spanish. Answer in the same format as the examples.\n\n"
+                "'Hello' -> 'Hola'\n"
+                "'Goodbye' -> 'Adiós'\n"
+                "'Thank you' ->"
+            ),
         },
     ],
 )
