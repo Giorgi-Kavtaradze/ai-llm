@@ -58,7 +58,7 @@ class LLMModel:
         if model_type == "openai":
             if not os.getenv("OPENAI_API_KEY"):
                 raise ValueError("OpenAI API key is required for OpenAI models")
-            self.llm = ChatOpenAI(model_name=model_name, temperature=0, reasoning_effort="none")
+            self.llm = ChatOpenAI(model_name=model_name)
         elif model_type == "ollama":
             self.llm = ChatOllama(
                 model=model_name,

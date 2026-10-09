@@ -59,7 +59,7 @@ def create_vector_store(texts: List[str], metadatas: List[Dict]):
 
 def setup_qa_chain(db):
     """Set up QA chain with polite response template"""
-    llm = ChatOpenAI(model_name=model_name, temperature=0, reasoning_effort="none")
+    llm = ChatOpenAI(name=model_name)
     retriever = db.as_retriever()
 
     # Create a custom prompt template
