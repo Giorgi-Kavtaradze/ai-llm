@@ -1,19 +1,9 @@
-# pip install yt_dlp
-# pip install -q git+https://github.com/openai/whisper.git
+# pip install youtube-transcript-api
 
-# Required to install also:
-# MacOS (requires https://brew.sh/):
-# brew install ffmpeg
-
-# ubuntu
-# sudo apt install ffmpeg
-
-# windows
-# https://www.hostinger.com/tutorials/how-to-install-ffmpeg
-
-import yt_dlp
-import whisper
 import os
+import requests
+from urllib.parse import urlparse, parse_qs
+from youtube_transcript_api import YouTubeTranscriptApi
 from typing import List, Dict
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -68,7 +58,7 @@ class LLMModel:
         if model_type == "openai":
             if not os.getenv("OPENAI_API_KEY"):
                 raise ValueError("OpenAI API key is required for OpenAI models")
-            self.llm = ChatOpenAI(model_name=model_name, temperature=0, reasoning_effort="none")
+            self.llm = ChatOpenAI(model_name=model_name)
         elif model_type == "ollama":
             self.llm = ChatOllama(
                 model=model_name,
@@ -89,8 +79,8 @@ class YoutubeVideoSummarizer:
         self.embedding_model = EmbeddingModel(embedding_type)
         self.llm_model = LLMModel(llm_type, llm_model_name)
 
-        # Initialize Whisper
-        self.whisper_model = whisper.load_model("base")
+        # Initialize YouTube transcript client
+        self.transcript_api = YouTubeTranscriptApi()
 
     def get_model_info(self) -> Dict:
         """Return current model configuration"""
@@ -100,32 +90,35 @@ class YoutubeVideoSummarizer:
             "embedding_type": self.embedding_model.model_type,
         }
 
-    def download_video(self, url: str) -> tuple[str, str]:
-        """Download video and extract audio"""
-        print("Downloading video...")
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
-            "outtmpl": "downloads/%(title)s.%(ext)s",
-        }
+    def get_video_id(self, url: str) -> str:
+        """Extract the video ID from a YouTube URL"""
+        parsed = urlparse(url)
+        if parsed.hostname in ("youtu.be", "www.youtu.be"):
+            return parsed.path.lstrip("/")
+        if parsed.path == "/watch":
+            return parse_qs(parsed.query)["v"][0]
+        if parsed.path.startswith(("/shorts/", "/embed/", "/live/")):
+            return parsed.path.split("/")[2]
+        raise ValueError(f"Could not extract video ID from URL: {url}")
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            audio_path = ydl.prepare_filename(info).replace(".webm", ".mp3")
-            video_title = info.get("title", "Unknown Title")
-            return audio_path, video_title
+    def get_video_title(self, url: str) -> str:
+        """Fetch video title using YouTube's oEmbed endpoint"""
+        try:
+            response = requests.get(
+                "https://www.youtube.com/oembed",
+                params={"url": url, "format": "json"},
+                timeout=10,
+            )
+            response.raise_for_status()
+            return response.json().get("title", "Unknown Title")
+        except requests.RequestException:
+            return "Unknown Title"
 
-    def transcribe_audio(self, audio_path: str) -> str:
-        """Transcribe audio using Whisper"""
-        print("Transcribing audio...")
-        result = self.whisper_model.transcribe(audio_path)
-        return result["text"]
+    def get_transcript(self, video_id: str) -> str:
+        """Download the video's transcript from YouTube"""
+        print("Downloading transcript...")
+        transcript = self.transcript_api.fetch(video_id, languages=["en"])
+        return " ".join(snippet.text for snippet in transcript)
 
     def create_documents(self, text: str, video_title: str) -> List[Document]:
         """Split text into chunks and create Document objects"""
@@ -197,19 +190,14 @@ class YoutubeVideoSummarizer:
     def process_video(self, url: str) -> Dict:
         """Process video and return summary and QA chain"""
         try:
-            # Create downloads directory if it doesn't exist
-            os.makedirs("downloads", exist_ok=True)
-
-            # Download and process
-            audio_path, video_title = self.download_video(url)
-            transcript = self.transcribe_audio(audio_path)
+            # Download transcript and process
+            video_id = self.get_video_id(url)
+            video_title = self.get_video_title(url)
+            transcript = self.get_transcript(video_id)
             documents = self.create_documents(transcript, video_title)
             summary = self.generate_summary(documents)
             vector_store = self.create_vector_store(documents)
             qa_chain = self.setup_qa_chain(vector_store)
-
-            # Clean up
-            os.remove(audio_path)
 
             return {
                 "summary": summary,
@@ -225,8 +213,7 @@ class YoutubeVideoSummarizer:
 def main():
     # use these urls for testing
     urls = [
-        "https://www.youtube.com/watch?v=v48gJFQvE1Y&ab_channel=BrockMesarich%7CAIforNonTechies",
-        "https://www.youtube.com/watch?v=XwZkNaTYBQI&ab_channel=TheGadgetGameShow%3AWhatTheHeckIsThat%3F%21",
+        "https://www.youtube.com/watch?v=v48gJFQvE1Y",
     ]
     # Get model preferences
     print("\nAvailable LLM Models:")
@@ -267,6 +254,8 @@ def main():
 
         # Process video
         url = input("\nEnter YouTube URL: ")
+        if not url:
+            url = urls[0]  # Default to first URL if none provided
         print(f"\nProcessing video...")
         result = summarizer.process_video(url)
 
