@@ -12,7 +12,7 @@ env_path = project_root / ".env"
 
 load_dotenv(env_path)
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI()
 
 response = client.embeddings.create(
     input="Hi my name is Tornike", model="text-embedding-3-small"

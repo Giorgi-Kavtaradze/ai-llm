@@ -20,8 +20,8 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 croma_client = chromadb.PersistentClient(path="./db/chroma_persist")
 
 collection = croma_client.get_or_create_collection(
-    "my_story",
-    embedding_function=openai_ef,
+    "my_story2",
+    embedding_function=openai_ef, # type: ignore
 )
 
 # Define text documents
@@ -71,16 +71,16 @@ for doc in documents:
     collection.upsert(ids=doc["id"], documents=[doc["text"]])
 
 # define a query text
-query_text = "find document related to Turing Test"
+query_text = "find document related to computers and their benchmarks"
 
 results = collection.query(
     query_texts=[query_text],
     n_results=3,
 )
 
-for idx, document in enumerate(results["documents"][0]):
+for idx, document in enumerate(results["documents"][0]): # type: ignore
     doc_id = results["ids"][0][idx]
-    distance = results["distances"][0][idx]
+    distance = results["distances"][0][idx] # type: ignore
 
     print(
         f" For the query: {query_text}, \n Found similar document: {document} (ID: {doc_id}, Distance: {distance})"
