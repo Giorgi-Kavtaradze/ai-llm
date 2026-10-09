@@ -10,7 +10,7 @@ load_dotenv(project_root / ".env")
 def simple_chat_without_memory(
     user_input: str,
     use_ollama: bool = True,
-) -> str:
+) -> str | None:
     """
     This function demonstrates a chatbot WITHOUT memory/context management.
     Each call is independent and has no knowledge of previous interactions.
@@ -18,7 +18,7 @@ def simple_chat_without_memory(
     # Initialize OpenAI API (or Ollama)
     if use_ollama:
         client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")
-        model_name = "llama3.2"
+        model_name = "gemma4"
     else:
         client = OpenAI()
         model_name = "gpt-6-luna"

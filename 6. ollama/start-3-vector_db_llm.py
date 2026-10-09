@@ -6,13 +6,8 @@ from chromadb.utils import embedding_functions
 from pathlib import Path
 from tqdm import tqdm
 
-# Load environment variables from .env file
-# Load .env from project root (parent directory)
-project_root = Path(__file__).resolve().parent.parent
-env_path = project_root / ".env"
-
-load_dotenv(env_path)
-openai_key = os.getenv("OPENAI_API_KEY")
+# Resolve paths relative to this script so it runs from any working directory
+script_dir = Path(__file__).resolve().parent
 
 ollama_ef = embedding_functions.OllamaEmbeddingFunction(
     url="http://localhost:11434",
@@ -21,14 +16,14 @@ ollama_ef = embedding_functions.OllamaEmbeddingFunction(
 
 
 # Initialize the Chroma client with persistence
-chroma_client = chromadb.PersistentClient(path="./db/chroma_persistent_storage")
+chroma_client = chromadb.PersistentClient(path=str(script_dir / "db" / "chroma_persistent_storage"))
 collection_name = "document_qa_collection"
 collection = chroma_client.get_or_create_collection(
-    name=collection_name, embedding_function=ollama_ef
+    name=collection_name, embedding_function=ollama_ef # type: ignore
 )
 
 client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
-directory_path = "../5. vector-databases-embeddings/data/new_articles"
+directory_path = script_dir.parent / "5. vector-databases-embeddings" / "data" / "new_articles"
 
 # =================================
 # === For initial setup -- Uncomment (below) all for the first run, and then comment it all out ===
@@ -87,7 +82,7 @@ def query_documents(question, n_results=2):
     results = collection.query(query_texts=question, n_results=n_results)
 
     # Extract the relevant chunks
-    relevant_chunks = [doc for sublist in results["documents"] for doc in sublist]
+    relevant_chunks = [doc for sublist in results["documents"] for doc in sublist] # type: ignore
     print("==== Returning relevant chunks ====")
     return relevant_chunks
     # for idx, document in enumerate(results["documents"][0]):

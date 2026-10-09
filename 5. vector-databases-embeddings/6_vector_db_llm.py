@@ -23,7 +23,7 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 chroma_client = chromadb.PersistentClient(path="./db/chroma_persistent_storage")
 collection_name = "document_qa_collection"
 collection = chroma_client.get_or_create_collection(
-    name=collection_name, embedding_function=openai_ef
+    name=collection_name, embedding_function=openai_ef # type: ignore
 )
 
 client = OpenAI(api_key=openai_key)
@@ -86,7 +86,7 @@ def query_documents(question, n_results=2):
     results = collection.query(query_texts=question, n_results=n_results)
 
     # Extract the relevant chunks
-    relevant_chunks = [doc for sublist in results["documents"] for doc in sublist]
+    relevant_chunks = [doc for sublist in results["documents"] for doc in sublist] # type: ignore
     print("==== Returning relevant chunks ====")
     return relevant_chunks
     # for idx, document in enumerate(results["documents"][0]):

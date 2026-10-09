@@ -25,18 +25,19 @@ def create_initial_messages() -> List[Dict[str, str]]:
 
 def chat(
     user_input: str, messages: List[Dict[str, str]], client: OpenAI, model_name: str
-) -> str:
+) -> str | None:
     """Handle user input and generate responses"""
     # Append user message to the conversation
     messages.append({"role": "user", "content": user_input})
 
     try:
         # Generate a response using the API
-        response = client.chat.completions.create(model=model_name, messages=messages)
+        response = client.chat.completions.create(model=model_name, messages=messages) # type: ignore
 
         # Append assistant's response to the conversation
         assistant_response = response.choices[0].message.content
-        messages.append({"role": "assistant", "content": assistant_response})
+        if assistant_response:
+            messages.append({"role": "assistant", "content": assistant_response})
 
         return assistant_response
     except Exception as e:
@@ -80,7 +81,7 @@ def main():
 
     # Initialize client and model name
     client = initialize_client(use_ollama)
-    model_name = "llama3.2" if use_ollama else "gpt-6-luna"
+    model_name = "gemma4" if use_ollama else "gpt-6-luna"
 
     # Initialize or load conversation
     messages = create_initial_messages()

@@ -55,7 +55,7 @@ class ChatBot:
             }
         ]
 
-    def chat(self, user_input: str) -> str:
+    def chat(self, user_input: str) -> str | None:
         try:
             # Log user input with metadata
             log_entry = {
@@ -73,7 +73,7 @@ class ChatBot:
             # Generate a response using the API
             start_time = datetime.now()
             response = self.client.chat.completions.create(
-                model=self.model_name, messages=self.messages
+                model=self.model_name, messages=self.messages # type: ignore
             )
             end_time = datetime.now()
 
@@ -94,7 +94,7 @@ class ChatBot:
                     "model": self.model_name,
                     "response_time_seconds": response_time,
                     "tokens_used": (
-                        response.usage.total_tokens
+                        response.usage.total_tokens # type: ignore
                         if hasattr(response, "usage")
                         else None
                     ),
@@ -103,7 +103,7 @@ class ChatBot:
             self.logger.info(json.dumps(log_entry))
 
             # Append assistant's response to the conversation
-            self.messages.append({"role": "assistant", "content": assistant_response})
+            self.messages.append({"role": "assistant", "content": assistant_response}) # type: ignore
 
             return assistant_response
 

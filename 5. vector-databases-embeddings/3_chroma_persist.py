@@ -6,7 +6,7 @@ default_ef = embedding_functions.DefaultEmbeddingFunction()
 croma_client = chromadb.PersistentClient(path="./db/chroma_persist")
 
 collection = croma_client.get_or_create_collection(
-    "my_story", embedding_function=default_ef
+    "my_story", embedding_function=default_ef # type: ignore
 )
 # Define text documents
 documents = [
@@ -23,16 +23,16 @@ for doc in documents:
     collection.upsert(ids=doc["id"], documents=[doc["text"]])
 
 # define a query text
-query_text = "find document related to technology company"
+query_text = "find document related to computers"
 
 results = collection.query(
     query_texts=[query_text],
     n_results=4,
 )
 
-for idx, document in enumerate(results["documents"][0]):
+for idx, document in enumerate(results["documents"][0]): # type: ignore
     doc_id = results["ids"][0][idx]
-    distance = results["distances"][0][idx]
+    distance = results["distances"][0][idx] # type: ignore
 
     print(
         f" For the query: {query_text}, \n Found similar document: {document} (ID: {doc_id}, Distance: {distance})"
