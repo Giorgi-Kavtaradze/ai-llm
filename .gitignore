@@ -128,3 +128,6 @@ langchain-fundamentals/
 
 # ignore database folders
 db/
+
+# chat history written by the context-memory examples
+conversation.json

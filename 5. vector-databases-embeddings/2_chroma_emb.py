@@ -7,4 +7,4 @@ name = "Hi my name is Tornike"
 
 emb = default_ef([name]) # type: ignore
 
-print(np.array(emb).shape)  # Output: (1, 1536)
+print(np.array(emb).shape)  
