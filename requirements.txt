@@ -42,5 +42,9 @@ uvicorn
 
 prettytable
 
+# for LangGraph
+langgraph
+langgraph-checkpoint-sqlite
+
 # to run the Jupyter notebooks
 ipykernel
