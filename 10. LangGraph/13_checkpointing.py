@@ -8,7 +8,8 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.sqlite import SqliteSaver
 from typing_extensions import TypedDict, Annotated
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
+from langchain_core.messages import HumanMessage, BaseMessage
+from langchain_core.runnables import RunnableConfig
 import operator
 import tempfile
 from dotenv import load_dotenv
@@ -18,6 +19,8 @@ load_dotenv()
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
 
 
+# Shared by the first four demos. operator.add APPENDS new messages instead of
+# replacing the list, so the history grows with every turn.
 class ChatState(TypedDict):
     messages: Annotated[list[BaseMessage], operator.add]
 
@@ -35,11 +38,14 @@ def demo_memory_saver():
     graph.add_edge(START, "chat")
     graph.add_edge("chat", END)
 
+    # The checkpointer saves state after every step. MemorySaver keeps it in RAM,
+    # so it's lost when the program exits (fine for development).
     saver = MemorySaver()
     app = graph.compile(checkpointer=saver)
 
     # Configuration with thread_id
-    config = {"configurable": {"thread_id": "user-123"}}
+    # thread_id = one conversation. Same thread_id -> LangGraph loads that thread's saved state.
+    config: RunnableConfig = {"configurable": {"thread_id": "user-123"}}
 
     print("Memory Saver Demo (Multi-turn conversation):\n")
 
@@ -50,10 +56,13 @@ def demo_memory_saver():
     print(f"Turn 1 - AI: {result['messages'][-1].content}")
 
     # Turn 2 - Conversation continues
+    # We only send the NEW message. The checkpointer restores turn 1 and the
+    # reducer appends to it, so the LLM sees the whole conversation.
     result = app.invoke({"messages": [HumanMessage(content="What's my name?")]}, config)
     print(f"Turn 2 - AI: {result['messages'][-1].content}")
 
     # Check full history
+    # 4 messages = 2 human + 2 AI, all stored in the checkpoint
     state = app.get_state(config)
     print(f"\nTotal messages in state: {len(state.values['messages'])}")
 
@@ -71,6 +80,7 @@ def demo_sqlite_persistence():
     graph.add_edge("chat", END)
 
     # Create temp database
+    # Checkpoints now go to a file on disk, so they survive the program restarting.
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = f.name
 
@@ -78,9 +88,11 @@ def demo_sqlite_persistence():
     print(f"Database: {db_path}\n")
 
     # First session
+    # SqliteSaver opens a DB connection; the `with` block closes it at the end,
+    # like shutting the app down.
     with SqliteSaver.from_conn_string(db_path) as saver:
         app = graph.compile(checkpointer=saver)
-        config = {"configurable": {"thread_id": "persistent-user"}}
+        config: RunnableConfig = {"configurable": {"thread_id": "persistent-user"}}
 
         result = app.invoke(
             {
@@ -94,9 +106,11 @@ def demo_sqlite_persistence():
 
         # PostgresSaver with a real database!
         # Simulate app restart - new session
+    # New connection + newly compiled graph: nothing is in memory any more.
+    # The same thread_id loads session 1's messages back from the SQLite file.
     with SqliteSaver.from_conn_string(db_path) as saver:
         app = graph.compile(checkpointer=saver)
-        config = {"configurable": {"thread_id": "persistent-user"}}
+        config: RunnableConfig = {"configurable": {"thread_id": "persistent-user"}}
 
         result = app.invoke(
             {"messages": [HumanMessage(content="What was the secret code?")]}, config
@@ -118,7 +132,7 @@ def demo_state_inspection():
 
     memory = MemorySaver()
     app = graph.compile(checkpointer=memory)
-    config = {"configurable": {"thread_id": "inspect-demo"}}
+    config: RunnableConfig = {"configurable": {"thread_id": "inspect-demo"}}
 
     print("\nState Inspection Demo:\n")
 
@@ -127,6 +141,8 @@ def demo_state_inspection():
     app.invoke({"messages": [HumanMessage(content="How are you?")]}, config)
 
     # Get current state
+    # get_state() returns the LATEST checkpoint: .values is the data, .next is
+    # the node(s) still to run (empty () when the graph has finished).
     state = app.get_state(config)
 
     print("Current state:")
@@ -134,6 +150,9 @@ def demo_state_inspection():
     print(f"  Message count: {len(state.values['messages'])}")
 
     # Get state history
+    # get_state_history() returns EVERY checkpoint of the thread, newest first.
+    # Each invoke() adds several (input, start, after each node), which is why
+    # the message counts step down.
     print("\nState history:")
     for i, snapshot in enumerate(app.get_state_history(config)):
         print(f"  Checkpoint {i}: {len(snapshot.values['messages'])} messages")
@@ -160,7 +179,7 @@ def demo_branching_conversations():
     print("\nBranching Conversations Demo:\n")
 
     # Main conversation
-    main_config = {"configurable": {"thread_id": "main"}}
+    main_config: RunnableConfig = {"configurable": {"thread_id": "main"}}
     app.invoke(
         {"messages": [HumanMessage(content="What's the weather like?")]}, main_config
     )
@@ -169,9 +188,13 @@ def demo_branching_conversations():
     main_state = app.get_state(main_config)
 
     # Branch A - Beach vacation
-    branch_a_config = {"configurable": {"thread_id": "branch-beach"}}
+    # A branch is just a NEW thread_id seeded with a copy of the main thread's state.
+    branch_a_config: RunnableConfig = {"configurable": {"thread_id": "branch-beach"}}
     # Copy state to new thread
     app.update_state(branch_a_config, main_state.values)
+
+    # Continues from the copied history, but only inside "branch-beach";
+    # the "main" thread is untouched.
 
     result_a = app.invoke(
         {"messages": [HumanMessage(content="What about a beach vacation?")]},
@@ -180,7 +203,8 @@ def demo_branching_conversations():
     print(f"Branch A (Beach): {result_a['messages'][-1].content[:100]}...")
 
     # Branch B - Mountain adventure
-    branch_b_config = {"configurable": {"thread_id": "branch-mountain"}}
+    # Same starting point, different thread: B never sees A's beach messages.
+    branch_b_config: RunnableConfig = {"configurable": {"thread_id": "branch-mountain"}}
     app.update_state(branch_b_config, main_state.values)
 
     result_b = app.invoke(
@@ -226,7 +250,7 @@ def demo_checkpoint_internals():
 
     memory = MemorySaver()
     app = graph.compile(checkpointer=memory)
-    config = {"configurable": {"thread_id": "internals-demo"}}
+    config: RunnableConfig = {"configurable": {"thread_id": "internals-demo"}}
 
     print("\nCheckpoint Internals Demo")
     print("=" * 55)
@@ -234,6 +258,7 @@ def demo_checkpoint_internals():
     print("=" * 55)
 
     # ── Run the graph ──
+    # One invoke() saves 4 checkpoints: input, start, after analyze, after summarize
 
     app.invoke(
         {"messages": [HumanMessage(content="Explain why the sky is blue")], "step": ""},
@@ -262,21 +287,21 @@ def demo_checkpoint_internals():
 
     # state.config — the config that produced this snapshot
     print(f"\n3) state.config (thread + checkpoint IDs):")
-    print(f"   thread_id:     {state.config['configurable']['thread_id']}")
-    print(f"   checkpoint_id: {state.config['configurable']['checkpoint_id']}")
+    print(f"   thread_id:     {state.config['configurable']['thread_id']}")  # type: ignore
+    print(f"   checkpoint_id: {state.config['configurable']['checkpoint_id']}")  # type: ignore
 
     # state.metadata — how this checkpoint was created
     # source: "input" = the initial invoke() input, "loop" = saved after a node ran,
     #         "update" = written by update_state()
     print(f"\n4) state.metadata (provenance info):")
-    print(f"   source:  {state.metadata.get('source', 'N/A')}")
-    print(f"   step:    {state.metadata.get('step', 'N/A')}")
+    print(f"   source:  {state.metadata.get('source', 'N/A')}")  # type: ignore
+    print(f"   step:    {state.metadata.get('step', 'N/A')}")  # type: ignore
 
     # state.parent_config — pointer to the PREVIOUS checkpoint
     print(f"\n5) state.parent_config (previous checkpoint):")
     if state.parent_config:
         print(
-            f"   parent checkpoint_id: {state.parent_config['configurable']['checkpoint_id']}"
+            f"   parent checkpoint_id: {state.parent_config['configurable']['checkpoint_id']}"  # type: ignore
         )
     else:
         print(f"   None — this is the very first checkpoint")
@@ -296,10 +321,10 @@ def demo_checkpoint_internals():
     history = list(app.get_state_history(config))
 
     for i, snapshot in enumerate(history):
-        step_num = snapshot.metadata.get("step", "?")
-        source = snapshot.metadata.get("source", "?")
+        step_num = snapshot.metadata.get("step", "?")  # type: ignore
+        source = snapshot.metadata.get("source", "?")  # type: ignore
         msg_count = len(snapshot.values.get("messages", []))
-        checkpoint_id = snapshot.config["configurable"]["checkpoint_id"]
+        checkpoint_id = snapshot.config["configurable"]["checkpoint_id"]  # type: ignore
         current_step = snapshot.values.get("step", "")
 
         # Which node just wrote to this checkpoint?
@@ -334,13 +359,14 @@ def demo_checkpoint_internals():
             break
 
     if target_snapshot:
-        target_id = target_snapshot.config["configurable"]["checkpoint_id"]
+        target_id = target_snapshot.config["configurable"]["checkpoint_id"]  # type: ignore
         print(f"  Found checkpoint after 'analyze' node: {target_id[:30]}...")
         print(f"  Messages at that point: {len(target_snapshot.values['messages'])}")
         print(f"  state.step at that point: '{target_snapshot.values.get('step', '')}'")
 
         # You can resume from this exact checkpoint
-        rewind_config = {
+        # Adding checkpoint_id to the config points at that snapshot instead of the latest one.
+        rewind_config: RunnableConfig = {
             "configurable": {"thread_id": "internals-demo", "checkpoint_id": target_id}
         }
 
@@ -383,6 +409,7 @@ def demo_checkpoint_internals():
 
 
 if __name__ == "__main__":
+    # Uncomment one demo at a time
     # demo_memory_saver()
     # demo_sqlite_persistence()
     # demo_state_inspection()
