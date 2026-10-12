@@ -265,11 +265,12 @@ def demo_checkpoint_internals():
     print(f"   thread_id:     {state.config['configurable']['thread_id']}")
     print(f"   checkpoint_id: {state.config['configurable']['checkpoint_id']}")
 
-    # state.metadata — who created this checkpoint
+    # state.metadata — how this checkpoint was created
+    # source: "input" = the initial invoke() input, "loop" = saved after a node ran,
+    #         "update" = written by update_state()
     print(f"\n4) state.metadata (provenance info):")
     print(f"   source:  {state.metadata.get('source', 'N/A')}")
     print(f"   step:    {state.metadata.get('step', 'N/A')}")
-    print(f"   writes:  {state.metadata.get('writes', 'N/A')}")
 
     # state.parent_config — pointer to the PREVIOUS checkpoint
     print(f"\n5) state.parent_config (previous checkpoint):")
@@ -291,16 +292,21 @@ def demo_checkpoint_internals():
     print("\n--- PART 2: Full Checkpoint History (app.get_state_history) ---\n")
     print("LangGraph saves a checkpoint at EACH step. Let's see them all:\n")
 
-    for i, snapshot in enumerate(app.get_state_history(config)):
+    # History comes newest-first, so history[i + 1] is the parent of history[i]
+    history = list(app.get_state_history(config))
+
+    for i, snapshot in enumerate(history):
         step_num = snapshot.metadata.get("step", "?")
         source = snapshot.metadata.get("source", "?")
-        writes = snapshot.metadata.get("writes", {})
         msg_count = len(snapshot.values.get("messages", []))
         checkpoint_id = snapshot.config["configurable"]["checkpoint_id"]
         current_step = snapshot.values.get("step", "")
 
         # Which node just wrote to this checkpoint?
-        node_name = list(writes.keys())[0] if writes else "—"
+        # The metadata doesn't record it, but the parent's .next does:
+        # whatever the parent was about to run is what produced this checkpoint.
+        parent = history[i + 1] if i + 1 < len(history) else None
+        node_name = ", ".join(parent.next) if parent else "— (initial input)"
 
         print(f"  Checkpoint {i}:")
         print(f"    id:         {checkpoint_id[:30]}...")
@@ -319,11 +325,11 @@ def demo_checkpoint_internals():
 
     print("--- PART 3: Rewind — Jump to a Previous Checkpoint ---\n")
 
-    # Find the checkpoint right after the "analyze" node ran
+    # Find the checkpoint right after the "analyze" node ran,
+    # i.e. the one whose next node is "summarize"
     target_snapshot = None
     for snapshot in app.get_state_history(config):
-        writes = snapshot.metadata.get("writes", {})
-        if "analyze" in writes:
+        if snapshot.next == ("summarize",):
             target_snapshot = snapshot
             break
 
@@ -360,7 +366,7 @@ def demo_checkpoint_internals():
     state.next          → Tuple of nodes that run next (() if done)
     state.config        → thread_id + checkpoint_id (unique address)
     state.parent_config → Previous checkpoint's address (linked list)
-    state.metadata      → source, step number, which node wrote
+    state.metadata      → source (input / loop / update) and step number
     state.created_at    → Timestamp of when this checkpoint was saved
 
     Checkpoints are saved:
