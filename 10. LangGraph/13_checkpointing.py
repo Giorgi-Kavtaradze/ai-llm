@@ -3,14 +3,13 @@ Checkpointing and Persistence in LangGraph
 Save and resume agent state
 """
 
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START, END, add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.sqlite import SqliteSaver
 from typing_extensions import TypedDict, Annotated
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, BaseMessage
 from langchain_core.runnables import RunnableConfig
-import operator
 import tempfile
 from dotenv import load_dotenv
 
@@ -19,10 +18,11 @@ load_dotenv()
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
 
 
-# Shared by the first four demos. operator.add APPENDS new messages instead of
-# replacing the list, so the history grows with every turn.
+# Shared by the first four demos. add_messages APPENDS new messages instead of
+# replacing the list, so the history grows with every turn. It also gives each
+# message an ID, so re-sending a message updates it rather than duplicating it.
 class ChatState(TypedDict):
-    messages: Annotated[list[BaseMessage], operator.add]
+    messages: Annotated[list[BaseMessage], add_messages]
 
 
 def demo_memory_saver():
@@ -51,7 +51,7 @@ def demo_memory_saver():
 
     # Turn 1
     result = app.invoke(
-        {"messages": [HumanMessage(content="My name is Paulo")]}, config
+        {"messages": [HumanMessage(content="My name is Tornike")]}, config
     )
     print(f"Turn 1 - AI: {result['messages'][-1].content}")
 
@@ -225,7 +225,7 @@ def demo_checkpoint_internals():
     # ── Build a 2-node graph so we get several checkpoints ──
 
     class TaskState(TypedDict):
-        messages: Annotated[list[BaseMessage], operator.add]
+        messages: Annotated[list[BaseMessage], add_messages]
         step: str
 
     def analyze(state: TaskState) -> dict:
