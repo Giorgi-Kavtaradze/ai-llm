@@ -41,6 +41,7 @@ class ResearchState(TypedDict):
     report: str
     quality_score: float
     quality_feedback: str
+    approved: bool  # set by quality_checker, read by quality_gate
     iteration: int
 
 
@@ -270,13 +271,17 @@ def quality_checker(state: ResearchState) -> dict:
         ]
     )
 
-    # Force approve after 2 iterations to prevent infinite loops
-    approved = review.approved or state["iteration"] >= 2
+    # Make the decision ONCE, here, and store it in state so the log message and
+    # the quality gate can't disagree.
+    # Force approval after 2 reviews (first draft + one revision) to prevent infinite loops.
+    iteration = state["iteration"] + 1
+    approved = review.approved or iteration >= 2
 
     return {
         "quality_score": review.score,
         "quality_feedback": review.feedback,
-        "iteration": state["iteration"] + 1,
+        "approved": approved,
+        "iteration": iteration,
         "messages": [
             AIMessage(
                 content=(
@@ -296,7 +301,8 @@ def quality_checker(state: ResearchState) -> dict:
 
 def quality_gate(state: ResearchState) -> Literal["report_writer", "end"]:
     """Route back to writer if quality is insufficient."""
-    if state["quality_score"] >= 0.7 or state["iteration"] >= 2:
+    # Just read the checker's decision; don't re-decide with a different rule
+    if state["approved"]:
         return "end"
     return "report_writer"
 
@@ -373,6 +379,7 @@ def demo_research_with_streaming():
         "report": "",
         "quality_score": 0.0,
         "quality_feedback": "",
+        "approved": False,
         "iteration": 0,
     }
 
@@ -430,6 +437,7 @@ def demo_full_research():
             "report": "",
             "quality_score": 0.0,
             "quality_feedback": "",
+            "approved": False,
             "iteration": 0,
         }
     )

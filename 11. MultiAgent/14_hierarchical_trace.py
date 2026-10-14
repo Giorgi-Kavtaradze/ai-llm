@@ -25,6 +25,8 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 class TeamState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
     final_answer: str
+    # Set by the CEO, read by the router. Departments ignore it.
+    department: str
 
 
 # ============================================================
@@ -315,29 +317,20 @@ def create_hierarchical_system():
         )
 
         return {
+            "department": decision.department,
             "messages": [
                 AIMessage(
                     content=f"[CEO]: Routing to {decision.department} — {decision.reasoning}",
                     name="ceo",
                 )
-            ]
+            ],
         }
 
     def route_to_department(state: TeamState) -> str:
-        """Read the CEO's routing decision from the last message."""
-        last_ai = None
-        for msg in reversed(state["messages"]):
-            if isinstance(msg, AIMessage) and msg.name == "ceo":
-                last_ai = msg
-                break
-
-        if last_ai and "research" in last_ai.text.lower():
-            return "research_team"
-        elif last_ai and "content" in last_ai.text.lower():
-            return "content_team"
-        elif last_ai and "analysis" in last_ai.text.lower():
-            return "analysis_team"
-        return "research_team"  # default
+        """Route on the CEO's structured decision, stored in state."""
+        # Don't search the CEO's message text for department names: its free-text
+        # reasoning can mention another department ("...writing, not research").
+        return f"{state['department']}_team"
 
     # Build parent graph — departments are compiled subgraphs as nodes
     parent = StateGraph(TeamState)
@@ -380,6 +373,7 @@ def demo_hierarchical_trace():
                 )
             ],
             "final_answer": "",
+            "department": "",
         }
     )
 
