@@ -60,22 +60,8 @@ def get_weather(city: str) -> str:
     data = response.json()
     temp = round(data["main"]["temp"])
     description = data["weather"][0]["description"].capitalize()
+    print(f"API response - Weather in {city}: {temp}°C, {description}")
     return f"Weather in {city}: {temp}°C, {description}"
-
-
-@tool
-def search_web(query: str) -> str:
-    """Simulate a web search for a query."""
-    # Simulated search results
-    search_results = {
-        "python programming": "Python is a high-level programming language known for its readability and versatility.",
-        "latest news": "Today's top news: AI continues to advance, impacting various industries worldwide.",
-        "best restaurants in new york": "Top restaurants in New York include Le Bernardin, Per Se, and Eleven Madison Park.",
-    }
-    query_lower = query.lower()
-    if query_lower in search_results:
-        return f"Search results for '{query}': {search_results[query_lower]}"
-    return f"No search results found for '{query}'"
 
 
 class AgentState(TypedDict):
@@ -85,7 +71,7 @@ class AgentState(TypedDict):
 def create_tool_agent():
     """Create a basic tool-calling agent."""
 
-    tools = [calculate, get_weather, search_web]
+    tools = [calculate, get_weather]
     llm_with_tools = llm.bind_tools(tools)  # this is the secret!
 
     def agent_node(state: AgentState) -> dict:
@@ -100,6 +86,7 @@ def create_tool_agent():
         # If no tool calls, we're done
         if not isinstance(last_message, AIMessage) or not last_message.tool_calls:
             return "end"
+
         return "tools"
 
     # create tool node
@@ -126,6 +113,10 @@ def demo_tool_agent():
     """Demo the tool-calling agent."""
 
     agent = create_tool_agent()
+
+    with open("tool_agent_graph.png", "wb") as f:
+        f.write(agent.get_graph().draw_mermaid_png())
+    print("\nGraph saved to tool_agent_graph.png")
 
     queries = [
         "What's 25 * 17?",

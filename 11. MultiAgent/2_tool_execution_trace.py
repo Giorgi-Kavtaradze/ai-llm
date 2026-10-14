@@ -63,21 +63,6 @@ def get_weather(city: str) -> str:
     return f"Weather in {city}: {temp}°C, {description}"
 
 
-@tool
-def search_web(query: str) -> str:
-    """Simulate a web search for a query."""
-    # Simulated search results
-    search_results = {
-        "python programming": "Python is a high-level programming language known for its readability and versatility.",
-        "latest news": "Today's top news: AI continues to advance, impacting various industries worldwide.",
-        "best restaurants in new york": "Top restaurants in New York include Le Bernardin, Per Se, and Eleven Madison Park.",
-    }
-    query_lower = query.lower()
-    if query_lower in search_results:
-        return f"Search results for '{query}': {search_results[query_lower]}"
-    return f"No search results found for '{query}'"
-
-
 class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
@@ -85,7 +70,7 @@ class AgentState(TypedDict):
 def create_tool_agent():
     """Create a basic tool-calling agent."""
 
-    tools = [calculate, get_weather, search_web]
+    tools = [calculate, get_weather]
     llm_with_tools = llm.bind_tools(tools)  # this is the secret!
 
     def agent_node(state: AgentState) -> dict:
