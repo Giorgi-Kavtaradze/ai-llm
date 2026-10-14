@@ -46,7 +46,7 @@ prettytable
 langgraph
 langgraph-checkpoint-sqlite
 
-# for multi-agent tools (OpenWeatherMap API)
+# for multi-agent tools (OpenWeatherMap and Tavily search APIs)
 requests
 
 # to run the Jupyter notebooks
