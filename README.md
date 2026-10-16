@@ -129,9 +129,15 @@ python agent.py
 
 ### Deploying to Google Cloud (optional)
 
-`12. ADK/deploy.sh` deploys an agent to Google Cloud Run, for example `./deploy.sh agent_3_sequential`. It needs:
+`12. ADK/deploy.sh` deploys an agent to Google Cloud Run. Pass the agent folder and your Google Cloud project ID:
+
+```bash
+./deploy.sh agent_3_sequential your-project-id
+```
+
+If you leave out the project ID, the project set with `gcloud config set project` is used. It needs:
 
 - The [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (`gcloud`)
-- A Google Cloud project with billing turned on. Change `PROJECT_ID` at the top of the script to your own project.
+- A Google Cloud project with billing turned on
 
 The one-time setup commands are at the top of the script. The script runs on macOS/Linux, or in Git Bash on Windows.

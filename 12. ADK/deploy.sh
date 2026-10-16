@@ -2,13 +2,18 @@
 # Deploy one of the ADK agents to Google Cloud Run.
 #
 # Usage (from the "12. ADK" folder, with the venv activated):
-#     ./deploy.sh                          deploys agent_6_model_callback
-#     ./deploy.sh agent_3_sequential       deploys any other agent folder
+#     ./deploy.sh [AGENT] [PROJECT_ID]
+#
+#     ./deploy.sh                                      agent_6_model_callback, gcloud's project
+#     ./deploy.sh agent_3_sequential                   any agent folder, gcloud's project
+#     ./deploy.sh agent_3_sequential my-project-id     any agent, any project
+#
+# Without PROJECT_ID, the project set with `gcloud config set project` is used.
 #
 # One-time setup:
 #     brew install --cask google-cloud-sdk         # installs gcloud
 #     gcloud auth login
-#     gcloud config set project learn-ai-511809
+#     gcloud config set project YOUR_PROJECT_ID
 #     gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
 #         artifactregistry.googleapis.com aiplatform.googleapis.com
 #
@@ -19,7 +24,6 @@
 # service account - no GOOGLE_API_KEY needed, usage is billed to the project.
 set -euo pipefail
 
-PROJECT_ID="learn-ai-511809"
 # Used both for Cloud Run and for the Vertex AI Gemini calls
 # (ADK sets GOOGLE_CLOUD_LOCATION to this region inside the container).
 # If a model is ever "not found" here, add --set-env-vars=GOOGLE_CLOUD_LOCATION=global
@@ -32,6 +36,15 @@ if ! command -v gcloud >/dev/null 2>&1; then
   echo "then open a new terminal and do the one-time setup at the top of this script." >&2
   exit 1
 fi
+
+# Google Cloud project: the 2nd argument, or the gcloud default project
+PROJECT_ID="${2:-$(gcloud config get-value project 2>/dev/null || true)}"
+if [ -z "$PROJECT_ID" ]; then
+  echo "No Google Cloud project given. Run: ./deploy.sh $AGENT YOUR_PROJECT_ID" >&2
+  echo "or set a default once with: gcloud config set project YOUR_PROJECT_ID" >&2
+  exit 1
+fi
+echo "Deploying $AGENT to project $PROJECT_ID ($REGION)"
 
 # Cloud Run service names may only use lowercase letters, digits and hyphens
 SERVICE_NAME="${AGENT//_/-}"
