@@ -1,19 +1,18 @@
-# AI LLM Course
-
-Code examples for the AI LLM course. Each numbered folder (`1. intro`, `2. openai-intro`, ...) holds the examples for one lesson.
+# AI LLM
 
 ## What you need
 
 Install these before you start:
 
-- **Python 3**: download it from [python.org](https://www.python.org/downloads/). Check that it works by running `python --version` (or `python3 --version` on macOS/Linux).
-- **Git**: download it from [git-scm.com](https://git-scm.com/downloads). Check it with `git --version`.
-- **A code editor** of your choice, for example [VS Code](https://code.visualstudio.com/) or [PyCharm](https://www.jetbrains.com/pycharm/).
-- **A virtual environment** (recommended). It keeps this course's packages separate from the rest of your computer. The steps below set one up for you.
-- **ffmpeg** (only for the audio examples in `8. langchain-fundamentals`: `voice_assis.py` and `yt_vid_summarizer.py`). Whisper uses it to read audio files. Install it with:
-  - **Windows:** `winget install --id Gyan.FFmpeg`
-  - **macOS:** `brew install ffmpeg` (needs [Homebrew](https://brew.sh/))
-  - **Linux (Ubuntu/Debian):** `sudo apt install ffmpeg`
+* **Python 3**: download it from [python.org](https://www.python.org/downloads/). Check that it works by running `python --version` (or `python3 --version` on macOS/Linux).
+* **Git**: download it from [git-scm.com](https://git-scm.com/downloads). Check it with `git --version`.
+* **A code editor** of your choice, for example [VS Code](https://code.visualstudio.com/) or [PyCharm](https://www.jetbrains.com/pycharm/).
+* **A virtual environment** (recommended). It keeps this course's packages separate from the rest of your computer. The steps below set one up for you.
+* **ffmpeg** (only for the audio examples in `8. langchain-fundamentals`: `voice_assis.py` and `yt_vid_summarizer.py`). Whisper uses it to read audio files. Install it with:
+
+  * **Windows:** `winget install --id Gyan.FFmpeg`
+  * **macOS:** `brew install ffmpeg` (needs [Homebrew](https://brew.sh/))
+  * **Linux (Ubuntu/Debian):** `sudo apt install ffmpeg`
 
   Check it with `ffmpeg -version`.
 
@@ -24,8 +23,8 @@ Run these commands in a terminal (on Windows, use Command Prompt or PowerShell).
 1. Download the project and go into its folder:
 
    ```bash
-   git clone https://github.com/higgs-labs/ai-llm-course.git
-   cd ai-llm-course
+   git clone https://github.com/Giorgi-Kavtaradze/ai-llm.git
+   cd ai-llm
    ```
 
 2. Create a virtual environment called `venv`:
@@ -38,13 +37,13 @@ Run these commands in a terminal (on Windows, use Command Prompt or PowerShell).
 
 3. Activate the virtual environment:
 
-   - **Windows:**
+   * **Windows:**
 
      ```bash
      venv\Scripts\activate
      ```
 
-   - **macOS/Linux:**
+   * **macOS/Linux:**
 
      ```bash
      source venv/bin/activate
@@ -65,7 +64,7 @@ Run these commands in a terminal (on Windows, use Command Prompt or PowerShell).
 Get the latest changes:
 
 ```bash
-cd ai-llm-course
+cd ai-llm
 git pull
 ```
 
@@ -79,18 +78,18 @@ pip install -r requirements.txt
 
 The virtual environment is only active in the terminal where you activated it. When you open a new terminal, go into the project folder and activate it again (step 3 above) before running any code.
 
-## Lesson 12: Google ADK
+## 12: Google ADK
 
 The `12. ADK` folder has six agents built with Google's [Agent Development Kit (ADK)](https://google.github.io/adk-docs/):
 
-| Folder | What it shows |
-|---|---|
-| `agent_1_ollama` | A basic agent running on a local Ollama model |
-| `agent_2_gemini_tools` | A Gemini agent with tools (live weather and local time) |
-| `agent_3_sequential` | `SequentialAgent`: agents that run one after another |
-| `agent_4_parallel` | `ParallelAgent`: agents that run at the same time, then one combines their work |
-| `agent_5_session` | Sessions and state (runs from the terminal) |
-| `agent_6_model_callback` | Model callbacks: a profanity filter |
+| Folder                   | What it shows                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| `agent_1_ollama`         | A basic agent running on a local Ollama model                                   |
+| `agent_2_gemini_tools`   | A Gemini agent with tools (live weather and local time)                         |
+| `agent_3_sequential`     | `SequentialAgent`: agents that run one after another                            |
+| `agent_4_parallel`       | `ParallelAgent`: agents that run at the same time, then one combines their work |
+| `agent_5_session`        | Sessions and state (runs from the terminal)                                     |
+| `agent_6_model_callback` | Model callbacks: a profanity filter                                             |
 
 ### API keys
 
@@ -102,9 +101,9 @@ GOOGLE_API_KEY=your-gemini-key
 OPENWEATHER_API_KEY=your-openweathermap-key
 ```
 
-- **`GOOGLE_API_KEY`** is needed by every agent except `agent_1_ollama`. Get one at [Google AI Studio](https://aistudio.google.com/apikey).
-- **`OPENWEATHER_API_KEY`** is only needed by `agent_2_gemini_tools`. Get one at [OpenWeatherMap](https://home.openweathermap.org/api_keys).
-- **`agent_1_ollama`** needs no key, but needs [Ollama](https://ollama.com/download) running on your computer with the model downloaded: `ollama pull gemma4` (a large download).
+* **`GOOGLE_API_KEY`** is needed by every agent except `agent_1_ollama`. Get one at [Google AI Studio](https://aistudio.google.com/apikey).
+* **`OPENWEATHER_API_KEY`** is only needed by `agent_2_gemini_tools`. Get one at [OpenWeatherMap](https://home.openweathermap.org/api_keys).
+* **`agent_1_ollama`** needs no key, but needs [Ollama](https://ollama.com/download) running on your computer with the model downloaded: `ollama pull gemma4` (a large download).
 
 ### Running the agents
 
@@ -137,7 +136,7 @@ python agent.py
 
 If you leave out the project ID, the project set with `gcloud config set project` is used. It needs:
 
-- The [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (`gcloud`)
-- A Google Cloud project with billing turned on
+* The [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (`gcloud`)
+* A Google Cloud project with billing turned on
 
 The one-time setup commands are at the top of the script. The script runs on macOS/Linux, or in Git Bash on Windows.
