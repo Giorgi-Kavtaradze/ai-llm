@@ -2,7 +2,7 @@ openai
 torch
 transformers
 chromadb
-streamlit
+streamlit>=1.49.1
 pypdf2
 langchain_community
 faiss-cpu
@@ -48,6 +48,10 @@ langgraph-checkpoint-sqlite
 
 # for multi-agent tools (OpenWeatherMap and Tavily search APIs)
 requests
+
+# for Google ADK
+google-adk>=1.12.0
+litellm>=1.76.0
 
 # to run the Jupyter notebooks
 ipykernel

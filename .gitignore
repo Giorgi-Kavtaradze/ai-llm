@@ -131,3 +131,6 @@ db/
 
 # chat history written by the context-memory examples
 conversation.json
+
+# Local databases (e.g. ADK session storage)
+*.db
