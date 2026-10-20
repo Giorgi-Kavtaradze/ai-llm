@@ -1,0 +1,413 @@
+<title>AI LLM Course</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62.5..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column "route map" - each arc of the course is a coloured line, each lesson a stop on it. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #142030;
+  --muted: #586476;
+  --line: #d8dee7;
+  --arc-1: #0d7a6b;   /* foundations */
+  --arc-2: #2c58cf;   /* retrieval */
+  --arc-3: #8a3dcc;   /* agents */
+  --arc-4: #b8720a;   /* coding agent */
+  --ok: #1d7438;
+  --ok-bg: #e5f3e9;
+  --chip-bg: #eef1f5;
+  --code-bg: #eef1f5;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a; --surface: #151c26; --ink: #e5eaf1; --muted: #9aa5b4; --line: #263140;
+    --arc-1: #3fc3ae; --arc-2: #7d9bff; --arc-3: #bb8cf2; --arc-4: #e7a83c;
+    --ok: #63cc85; --ok-bg: #16301f; --chip-bg: #1d2633; --code-bg: #1b2430;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a; --surface: #151c26; --ink: #e5eaf1; --muted: #9aa5b4; --line: #263140;
+  --arc-1: #3fc3ae; --arc-2: #7d9bff; --arc-3: #bb8cf2; --arc-4: #e7a83c;
+  --ok: #63cc85; --ok-bg: #16301f; --chip-bg: #1d2633; --code-bg: #1b2430;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-block: 48px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 56px;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--arc-2); outline-offset: 2px; border-radius: 4px; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+
+/* Header */
+header { display: grid; gap: 18px; }
+.repo { font-family: var(--mono); font-size: 13px; color: var(--muted); text-decoration: none; }
+.repo:hover { color: var(--ink); text-decoration: underline; }
+h1 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 125;
+  font-weight: 850;
+  font-size: clamp(40px, 8vw, 76px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+.lead { font-size: 19px; max-width: 60ch; margin: 0; color: var(--ink); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 4px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+.facts b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Line legend */
+.legend { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 22px; height: 4px; border-radius: 2px; background: var(--c); display: inline-block; }
+
+/* Route */
+.arc { display: grid; gap: 0; }
+.arc-head {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: end;
+  padding-bottom: 14px;
+}
+.arc-head .tag {
+  grid-column: 2;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 110;
+  font-weight: 750;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c);
+}
+.arc-head h2 {
+  grid-column: 2;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 100;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 2px 0 0;
+  text-wrap: balance;
+}
+.stop {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  position: relative;
+}
+.stop::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--c);
+}
+.arc .stop:first-of-type::before { top: 18px; }
+.arc .stop:last-of-type::before { bottom: calc(100% - 18px); }
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  margin-top: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 4px solid var(--c);
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 90;
+  font-weight: 800;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.body {
+  padding: 4px 0 30px 14px;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.folder { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.stop h3 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 100;
+  font-weight: 650;
+  font-size: 20px;
+  line-height: 1.25;
+  margin: 0;
+}
+.stop p { margin: 0; max-width: 66ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 6px; font-size: 13px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.chip.local { background: var(--ok-bg); color: var(--ok); font-weight: 500; }
+.chip.local::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.start { color: var(--muted); }
+.start code { color: var(--ink); background: var(--code-bg); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+
+/* Setup */
+.setup { display: grid; gap: 16px; }
+.setup h2 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 110;
+  font-weight: 750;
+  font-size: 28px;
+  margin: 0;
+}
+.setup > p { margin: 0; color: var(--muted); max-width: 62ch; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: step; }
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: start;
+}
+.steps li::before {
+  content: counter(step);
+  font-family: var(--display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  padding-top: 9px;
+  text-align: right;
+}
+.cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 6px 6px 12px;
+  min-width: 0;
+}
+.cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: pre; font-size: 14px; padding-block: 3px; }
+.cmd .note { grid-column: 2; font-size: 13px; color: var(--muted); }
+.copy {
+  flex: none;
+  font: 500 12px var(--body);
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.copy:hover { color: var(--ink); border-color: var(--muted); }
+.steps .hint { grid-column: 2; font-size: 13px; color: var(--muted); margin: 0; }
+
+footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+
+@media (max-width: 520px) {
+  .lead { font-size: 17px; }
+  .stop h3 { font-size: 18px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .copy { transition: color .15s, border-color .15s; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <a class="repo" href="https://github.com/higgs-labs/ai-llm-course">github.com/higgs-labs/ai-llm-course</a>
+    <h1>AI LLM Course</h1>
+    <p class="lead">Thirteen hands-on lessons, from running GPT-2 on your own laptop to multi-agent research systems and AI coding agents. Every lesson is a folder of small Python scripts you run, read and change.</p>
+    <ul class="facts">
+      <li><b>13</b> lessons</li>
+      <li><b>75</b> example scripts and notebooks</li>
+      <li><b>6</b> Google ADK agents</li>
+      <li><b>1</b> <code>requirements.txt</code> for all of it</li>
+    </ul>
+    <div class="legend" aria-label="Course sections">
+      <span style="--c: var(--arc-1)"><i></i>Foundations</span>
+      <span style="--c: var(--arc-2)"><i></i>Retrieval</span>
+      <span style="--c: var(--arc-3)"><i></i>Agents</span>
+      <span style="--c: var(--arc-4)"><i></i>Coding agents</span>
+    </div>
+  </header>
+
+  <main style="display:grid; gap:40px">
+    <section class="arc" style="--c: var(--arc-1)" aria-labelledby="arc1">
+      <div class="arc-head"><span class="tag">Lessons 1–4 · Foundations</span><h2 id="arc1">What a language model is, and how to call one from Python</h2></div>
+
+      <div class="stop"><span class="dot">1</span><div class="body">
+        <span class="folder">1. intro</span>
+        <h3>Run a model on your laptop</h3>
+        <p>Load the smallest GPT-2 (124M parameters) with Hugging Face <code>transformers</code>, see how text becomes tokens, and generate text on your CPU.</p>
+        <div class="meta"><span class="chip local">No API key</span><span class="chip">2 scripts</span><span class="start">Start with <code>intro_transformer.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">2</span><div class="body">
+        <span class="folder">2. openai-intro</span>
+        <h3>Your first API calls</h3>
+        <p>Send text and images to the OpenAI API, and try prompt techniques in a script and a notebook.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">4 files</span><span class="start">Start with <code>openai-simple.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">3</span><div class="body">
+        <span class="folder">3. context-memory</span>
+        <h3>Why chatbots forget</h3>
+        <p>Compare a chatbot with no memory to one that saves the conversation to JSON and sends it back on every turn.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">2 scripts</span><span class="start">Start with <code>no_memory.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">4</span><div class="body">
+        <span class="folder">4. logging-llm</span>
+        <h3>Log what your app sends and gets back</h3>
+        <p>Record every request and response, with session IDs and timestamps, so you can debug and measure an LLM app.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">1 script</span><span class="start">Start with <code>chatbot_logging.py</code></span></div>
+      </div></div>
+    </section>
+
+    <section class="arc" style="--c: var(--arc-2)" aria-labelledby="arc2">
+      <div class="arc-head"><span class="tag">Lessons 5–9 · Retrieval</span><h2 id="arc2">Give a model your own documents</h2></div>
+
+      <div class="stop"><span class="dot">5</span><div class="body">
+        <span class="folder">5. vector-databases-embeddings</span>
+        <h3>Embeddings and vector databases</h3>
+        <p>Turn text into vectors, store and persist them in ChromaDB, search by meaning, and pass the results to an LLM.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">7 scripts</span><span class="start">Start with <code>1_app.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">6</span><div class="body">
+        <span class="folder">6. ollama</span>
+        <h3>Local models with Ollama</h3>
+        <p>Run open models on your own machine: a custom Modelfile, function calling, chat over a PDF with a Streamlit UI, and a voice version.</p>
+        <div class="meta"><span class="chip local">Runs locally</span><span class="chip">10 files</span><span class="start">Start with <code>start-1.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">7</span><div class="body">
+        <span class="folder">7. rag</span>
+        <h3>Retrieval-augmented generation</h3>
+        <p>Answer questions from a CSV of space facts and from a research paper PDF, first in the terminal and then in a Streamlit app.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">3 scripts</span><span class="start">Start with <code>simple_rag.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">8</span><div class="body">
+        <span class="folder">8. langchain-fundamentals</span>
+        <h3>LangChain fundamentals</h3>
+        <p>Document loaders, text splitters and chains, then three small apps: a web-scraping Q&amp;A bot, a voice assistant and a YouTube video summarizer.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">ffmpeg for the audio apps</span><span class="chip">10 scripts</span><span class="start">Start with <code>1_intro_lang.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">9</span><div class="body">
+        <span class="folder">9. advanced-rag</span>
+        <h3>Better retrieval</h3>
+        <p>Find more of the right chunks with query expansion, then put the best ones first with reranking.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">Cohere key for reranking</span><span class="chip">3 scripts</span><span class="start">Start with <code>query_expander_final.py</code></span></div>
+      </div></div>
+    </section>
+
+    <section class="arc" style="--c: var(--arc-3)" aria-labelledby="arc3">
+      <div class="arc-head"><span class="tag">Lessons 10–12 · Agents</span><h2 id="arc3">Models that follow plans, call tools and work in teams</h2></div>
+
+      <div class="stop"><span class="dot">10</span><div class="body">
+        <span class="folder">10. LangGraph</span>
+        <h3>Workflows as graphs</h3>
+        <p>State and reducers, routing, loops that retry until the result is good enough, pausing for human approval, checkpoints, SQLite persistence and branching conversations.</p>
+        <div class="meta"><span class="chip local">9 of 17 need no key</span><span class="chip">OpenAI key for the rest</span><span class="start">Start with <code>1_simple_graph.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">11</span><div class="body">
+        <span class="folder">11. MultiAgent</span>
+        <h3>Multi-agent systems</h3>
+        <p>Tool-calling agents, a supervisor, handoffs, parallel agents, map-reduce, message passing, a shared blackboard, hierarchical teams, and a research system that searches the web.</p>
+        <div class="meta"><span class="chip">OpenAI key</span><span class="chip">Tavily key for web search</span><span class="chip">16 scripts</span><span class="start">Start with <code>1_tool_calling_agent.py</code></span></div>
+      </div></div>
+
+      <div class="stop"><span class="dot">12</span><div class="body">
+        <span class="folder">12. ADK</span>
+        <h3>Google Agent Development Kit</h3>
+        <p>Six agents: one on a local Ollama model, Gemini with live tools, sequential and parallel agents, sessions and state, and a model callback. Optionally deploy one to Google Cloud Run.</p>
+        <div class="meta"><span class="chip">Gemini key</span><span class="chip local">Agent 1 runs locally</span><span class="chip">6 agents</span><span class="start">Start with <code>adk web</code></span></div>
+      </div></div>
+    </section>
+
+    <section class="arc" style="--c: var(--arc-4)" aria-labelledby="arc4">
+      <div class="arc-head"><span class="tag">Lesson 13 · Coding agents</span><h2 id="arc4">Build with an AI coding agent</h2></div>
+
+      <div class="stop"><span class="dot">13</span><div class="body">
+        <span class="folder">13. claude-code</span>
+        <h3>Using Claude Code efficiently</h3>
+        <p>CLAUDE.md and memory, skills, plugins, connectors such as Jira and GitHub, hooks, <code>/goal</code> and <code>/loop</code>, pull request reviews, and how tokens are spent. It also runs on local models through Ollama. This page was made in Claude Code as the lesson's artifact demo.</p>
+        <div class="meta"><span class="chip">Claude plan</span><span class="chip local">or a local model via Ollama</span><span class="start">Start with <code>README.md</code></span></div>
+      </div></div>
+    </section>
+  </main>
+
+  <section class="setup" aria-labelledby="setup">
+    <h2 id="setup">Get started</h2>
+    <p>You need Python 3 and Git. These commands download the course and install everything once. On Windows, use <code>python</code> and activate with <code>venv\Scripts\activate</code>.</p>
+    <ol class="steps">
+      <li><div class="cmd"><code>git clone https://github.com/higgs-labs/ai-llm-course.git</code><button class="copy" type="button">Copy</button></div></li>
+      <li><div class="cmd"><code>cd ai-llm-course</code><button class="copy" type="button">Copy</button></div></li>
+      <li><div class="cmd"><code>python3 -m venv venv &amp;&amp; source venv/bin/activate</code><button class="copy" type="button">Copy</button></div></li>
+      <li><div class="cmd"><code>pip install -r requirements.txt</code><button class="copy" type="button">Copy</button></div><p class="hint">This can take several minutes: some packages, such as torch, are large.</p></li>
+      <li><div class="cmd"><code>echo "OPENAI_API_KEY=your-key" &gt; .env</code><button class="copy" type="button">Copy</button></div><p class="hint">Most lessons read their keys from <code>.env</code> in the project root. Lessons 1 and 6 don't need one.</p></li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Course code: <a href="https://github.com/higgs-labs/ai-llm-course">github.com/higgs-labs/ai-llm-course</a></span>
+    <span>The source of this page is in <code>13. claude-code/examples/artifact/course-map.html</code>.</span>
+  </footer>
+</div>
+
+<script>
+document.querySelectorAll(".copy").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    var code = btn.parentElement.querySelector("code");
+    var text = code.textContent;
+    function done(label) {
+      btn.textContent = label;
+      setTimeout(function () { btn.textContent = "Copy"; }, 1600);
+    }
+    function selectIt() {
+      var range = document.createRange();
+      range.selectNodeContents(code);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      done("Press Ctrl+C");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done("Copied"); }, selectIt);
+    } else {
+      selectIt();
+    }
+  });
+});
+</script>

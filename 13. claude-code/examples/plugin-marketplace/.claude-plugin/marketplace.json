@@ -1,0 +1,12 @@
+{
+  "name": "ai-llm",
+  "owner": { "name": "Higgs Labs" },
+  "description": "Example marketplace for Lesson 13 of the AI LLM course",
+  "plugins": [
+    {
+      "name": "tools",
+      "source": "./plugins/tools",
+      "description": "Helpers for the AI LLM"
+    }
+  ]
+}
