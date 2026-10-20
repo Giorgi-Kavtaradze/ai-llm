@@ -140,3 +140,21 @@ If you leave out the project ID, the project set with `gcloud config set project
 * A Google Cloud project with billing turned on
 
 The one-time setup commands are at the top of the script. The script runs on macOS/Linux, or in Git Bash on Windows.
+
+## 13: Claude Code
+
+The `13. claude-code` folder has a guide to using [Claude Code](https://code.claude.com/docs) efficiently. Read [`13. claude-code/README.md`](13.%20claude-code/README.md). It covers:
+
+* Installation and your first session
+* Running Claude Code for free with local models through Ollama
+* `/init` and CLAUDE.md
+* Memory (`/memory` and auto memory)
+* Skills and the plugin manager (`/skills`, `/plugin`), with examples you can try, and the most popular open-source skill repos
+* Connectors (MCP) such as Jira, GitHub and Notion
+* Running terminal commands: permissions, background tasks, hooks, and calling Claude from scripts with `claude -p`
+* Letting Claude keep working on its own with `/goal` and `/loop`
+* Reviewing pull requests with `/code-review`, `/security-review` and GitHub
+* Artifacts: publishing shareable pages, with a demo page about this course
+* How Claude Code consumes tokens, and when to use `/clear`, `/compact` and `/rewind`
+
+The `examples` folder has a sample skill (`explain-code`), a sample plugin marketplace (`course-tools`), a hook that blocks dangerous commands, a Python script that calls Claude Code, and the source of the course overview artifact. Claude Code needs a paid Claude plan or a Claude Console account, or a local model through Ollama.
